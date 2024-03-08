@@ -1,10 +1,10 @@
 package uk.joshiejack.shopaholic.client;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import uk.joshiejack.shopaholic.shop.Department;
-import uk.joshiejack.shopaholic.shop.inventory.Stock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import uk.joshiejack.shopaholic.world.shop.Department;
+import uk.joshiejack.shopaholic.world.shop.inventory.Stock;
 
 import java.util.Map;
 

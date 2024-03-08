@@ -1,16 +1,16 @@
 package uk.joshiejack.shopaholic.event;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraftforge.event.world.WorldEvent;
-import uk.joshiejack.penguinlib.world.teams.PenguinTeam;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import uk.joshiejack.penguinlib.world.team.PenguinTeam;
 
-public class ItemShippedEvent extends WorldEvent {
+public class ItemShippedEvent extends LevelEvent {
     private final PenguinTeam team;
     private final ItemStack shipped;
     private final long value;
 
-    public ItemShippedEvent(World world, PenguinTeam team, ItemStack shipped, long value) {
+    public ItemShippedEvent(Level world, PenguinTeam team, ItemStack shipped, long value) {
         super(world);
         this.team = team;
         this.shipped = shipped;

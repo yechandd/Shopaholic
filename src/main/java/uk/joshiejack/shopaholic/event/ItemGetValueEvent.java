@@ -1,7 +1,7 @@
 package uk.joshiejack.shopaholic.event;
 
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.eventbus.api.Event;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.Event;
 
 public class ItemGetValueEvent extends Event {
     private final ItemStack stack;

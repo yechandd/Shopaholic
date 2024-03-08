@@ -1,21 +1,20 @@
 package uk.joshiejack.shopaholic.data.shop.comparator;
 
-import net.minecraft.block.Block;
-import net.minecraft.tags.ITag;
-import uk.joshiejack.penguinlib.data.database.CSVUtils;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+import uk.joshiejack.shopaholic.api.shop.Comparator;
+import uk.joshiejack.shopaholic.world.shop.comparator.BlockTagOnTargetComparator;
 
-public class BlockTagOnTargetComparatorBuilder extends ComparatorBuilder {
-    private final ITag.INamedTag<Block> tag;
+public class BlockTagOnTargetComparatorBuilder implements ComparatorBuilder {
+    private final TagKey<Block> tag;
 
     @SuppressWarnings("unused")
-    protected BlockTagOnTargetComparatorBuilder(String id, ITag.INamedTag<Block> tag) {
-        super(id);
+    protected BlockTagOnTargetComparatorBuilder(TagKey<Block> tag) {
         this.tag = tag;
     }
 
     @Override
-    public void save(ShopaholicDatabase data) {
-        data.addEntry("comparator_block_tag", "ID,Tag", CSVUtils.join(id, tag.getName().toString()));
+    public Comparator build() {
+        return new BlockTagOnTargetComparator(tag);
     }
 }

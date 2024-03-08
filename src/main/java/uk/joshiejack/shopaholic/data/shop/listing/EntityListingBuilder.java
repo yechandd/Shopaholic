@@ -1,19 +1,23 @@
 package uk.joshiejack.shopaholic.data.shop.listing;
 
-import uk.joshiejack.penguinlib.data.database.CSVUtils;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
-import uk.joshiejack.shopaholic.shop.listing.EntityListingHandler;
+import net.minecraft.world.entity.EntityType;
+import uk.joshiejack.shopaholic.world.shop.Sublisting;
+import uk.joshiejack.shopaholic.world.shop.listing.EntityTypeListing;
 
-public class EntityListingBuilder extends SublistingBuilder<EntityListingBuilder> {
-    private final EntityListingHandler.EntitySpawnData entity;
-
-    public EntityListingBuilder(String id, EntityListingHandler.EntitySpawnData entity) {
-        super("entity", id);
-        this.entity = entity;
+public class EntityListingBuilder extends SublistingBuilder<EntityType<?>> {
+    public EntityListingBuilder(EntityType<?> entity) {
+        super(entity);
     }
 
     @Override
-    public void save(ShopaholicDatabase data) {
-        data.addEntry("entity_listings", "ID,Entity", CSVUtils.join(this.data, entity.type.getRegistryName().toString()));
+    public Sublisting build() {
+        return new Sublisting(id,
+                new EntityTypeListing(data),
+                buildMaterials(),
+                tooltip,
+                icon,
+                name,
+                gold,
+                weight);
     }
 }

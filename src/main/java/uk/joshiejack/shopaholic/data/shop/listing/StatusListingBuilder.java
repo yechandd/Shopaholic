@@ -1,24 +1,29 @@
 package uk.joshiejack.shopaholic.data.shop.listing;
 
-import uk.joshiejack.penguinlib.data.database.CSVUtils;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import org.apache.commons.lang3.tuple.Pair;
 import uk.joshiejack.shopaholic.data.shop.comparator.ComparatorBuilder;
+import uk.joshiejack.shopaholic.world.shop.Sublisting;
+import uk.joshiejack.shopaholic.world.shop.listing.PlayerStatusListing;
+import uk.joshiejack.shopaholic.world.shop.listing.TeamStatusListing;
 
 @SuppressWarnings("unused")
-public class StatusListingBuilder extends SublistingBuilder<StatusListingBuilder> {
-    private final String field;
-    private final ComparatorBuilder comparator;
-
-    public StatusListingBuilder(String type, String id, String field, ComparatorBuilder comparator) {
-        super(type, id);
-        this.field = field;
-        this.comparator = comparator;
+public class StatusListingBuilder extends SublistingBuilder<Pair<String, ComparatorBuilder>> {
+    private final String type;
+    public StatusListingBuilder(String type, String field, ComparatorBuilder comparator) {
+        super(Pair.of(field, comparator));
+        this.type = type;
     }
 
     @Override
-    public void save(ShopaholicDatabase data) {
-        data.addEntry(type + "es", "ID,Field,Comparator ID", CSVUtils.join(this.data, field, comparator.id));
-        comparator.save(data);
+    public Sublisting build() {
+        return new Sublisting(id,
+                type.equals("player") ? new PlayerStatusListing(data.getLeft(), data.getRight().build()) : new TeamStatusListing(data.getLeft(), data.getRight().build()),
+                buildMaterials(),
+                tooltip,
+                icon,
+                name,
+                gold,
+                weight);
     }
 }
 

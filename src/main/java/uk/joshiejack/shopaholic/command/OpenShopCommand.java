@@ -3,38 +3,56 @@ package uk.joshiejack.shopaholic.command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import uk.joshiejack.shopaholic.Shopaholic;
 import uk.joshiejack.shopaholic.api.shop.Condition;
 import uk.joshiejack.shopaholic.api.shop.ShopTarget;
-import uk.joshiejack.shopaholic.shop.input.EntityShopInput;
-import uk.joshiejack.shopaholic.shop.input.InputMethod;
-import uk.joshiejack.shopaholic.shop.input.InputToShop;
+import uk.joshiejack.shopaholic.world.shop.input.EntityShopInput;
+import uk.joshiejack.shopaholic.world.shop.input.InputMethod;
+import uk.joshiejack.shopaholic.world.shop.input.InputToShop;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class OpenShopCommand {
-    public static ArgumentBuilder<CommandSource, ?> register() {
+    public static final SuggestionProvider<CommandSourceStack> ALL_SHOPS = SuggestionProviders.register(
+            new ResourceLocation(Shopaholic.MODID, "all_shops"),
+            (ctx, builder) -> SharedSuggestionProvider.suggest(suggestions(ctx), builder)
+    );
+
+    public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("open")
                 .then(Commands.argument("shop", StringArgumentType.string())
-                        .suggests((ctx, sb) -> ISuggestionProvider.suggest(suggestions(ctx), sb))
+                        .suggests(ALL_SHOPS)
                         .executes(ctx -> {
                             String arg = StringArgumentType.getString(ctx, "shop");
-                            PlayerEntity player = ctx.getSource().getPlayerOrException();
+                            Player player = ctx.getSource().getPlayerOrException();
                             return InputToShop.open(InputToShop.COMMAND_TO_SHOP.get(arg),
-                                    new ShopTarget(player.level, player.blockPosition(), player, player, ItemStack.EMPTY, new EntityShopInput(player)),
+                                    new ShopTarget(player.level(), player.blockPosition(), player, player, ItemStack.EMPTY, new EntityShopInput(player)),
                                     InputMethod.COMMAND) ? 1 : 0;
                         }));
     }
 
-    private static List<String> suggestions(final CommandContext<CommandSource> context) {
-        return InputToShop.COMMAND_TO_SHOP.entries().stream()
-                .filter(e -> e.getValue().isValidFor(ShopTarget.fromSource(context.getSource()), Condition.CheckType.SHOP_EXISTS))
-                .map(Map.Entry::getKey).collect(Collectors.toList());
+    private static Stream<String> suggestions(final CommandContext<SharedSuggestionProvider> context) {
+        if (context.getSource() instanceof CommandSourceStack stack) {
+            return InputToShop.COMMAND_TO_SHOP.entries().stream()
+                    .filter(e -> e.getValue().isValidFor(ShopTarget.fromSource(stack), Condition.CheckType.SHOP_EXISTS))
+                    .map(Map.Entry::getKey);
+        } else return Stream.empty();
+    }
+
+    public static class ShopSuggestions implements Consumer<CommandSourceStack> {
+        @Override
+        public void accept(CommandSourceStack commandSourceStack) {
+
+        }
     }
 }

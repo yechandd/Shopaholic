@@ -4,10 +4,10 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import uk.joshiejack.shopaholic.shipping.Shipping;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import uk.joshiejack.shopaholic.world.shipping.Shipping;
 
 import java.util.List;
 import java.util.Set;

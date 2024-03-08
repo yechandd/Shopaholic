@@ -1,32 +1,41 @@
 package uk.joshiejack.shopaholic.network.shop;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import uk.joshiejack.penguinlib.network.PenguinPacket;
-import uk.joshiejack.penguinlib.util.PenguinLoader;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.PacketFlow;
+import org.jetbrains.annotations.NotNull;
+import uk.joshiejack.penguinlib.PenguinLib;
+import uk.joshiejack.penguinlib.network.packet.PenguinPacket;
+import uk.joshiejack.penguinlib.util.registry.Packet;
 
-@PenguinLoader.Packet(NetworkDirection.PLAY_TO_CLIENT)
-public class SetPlayerShopSeed extends PenguinPacket {
-    private int seed;
+@Packet(PacketFlow.CLIENTBOUND)
+public class SetPlayerShopSeed implements PenguinPacket {
+    public static final ResourceLocation ID = PenguinLib.prefix("set_player_shop_seed");
+    @Override
+    public @NotNull ResourceLocation id() {
+        return ID;
+    }
 
-    public SetPlayerShopSeed() { }
+    private final int seed;
+
     public SetPlayerShopSeed(int value) {
         this.seed = value;
     }
 
-    @Override
-    public void encode(PacketBuffer to) {
-        to.writeVarInt(seed);
-    }
-
-    @Override
-    public void decode(PacketBuffer from) {
+    public SetPlayerShopSeed(FriendlyByteBuf from) {
         seed = from.readVarInt();
     }
 
+
     @Override
-    public void handle(PlayerEntity player) {
+    public void write(FriendlyByteBuf to) {
+        to.writeVarInt(seed);
+    }
+
+
+    @Override
+    public void handle(Player player) {
         player.getPersistentData().putInt("ShopaholicSeed", seed);
     }
 }

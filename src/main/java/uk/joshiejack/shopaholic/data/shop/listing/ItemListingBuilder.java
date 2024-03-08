@@ -1,13 +1,23 @@
 package uk.joshiejack.shopaholic.data.shop.listing;
 
-import net.minecraft.item.Item;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import net.minecraft.world.item.ItemStack;
+import uk.joshiejack.shopaholic.world.shop.Sublisting;
+import uk.joshiejack.shopaholic.world.shop.listing.ItemStackListing;
 
-public class ItemListingBuilder extends SublistingBuilder<ItemListingBuilder> {
-    public ItemListingBuilder(Item item) {
-        super("item", item.getRegistryName().toString());
+public class ItemListingBuilder extends SublistingBuilder<ItemStack> {
+    public ItemListingBuilder(ItemStack item) {
+        super(item);
     }
 
     @Override
-    public void save(ShopaholicDatabase data) {}
+    public Sublisting build() {
+        return new Sublisting(id,
+                new ItemStackListing(data),
+                buildMaterials(),
+                tooltip,
+                icon,
+                name,
+                gold,
+                weight);
+    }
 }

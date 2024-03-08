@@ -1,7 +1,7 @@
 package uk.joshiejack.shopaholic.client.bank;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import uk.joshiejack.shopaholic.api.bank.WalletType;
 
 import java.util.EnumMap;

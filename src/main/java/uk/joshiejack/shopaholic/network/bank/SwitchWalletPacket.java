@@ -1,43 +1,52 @@
 package uk.joshiejack.shopaholic.network.bank;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
+import uk.joshiejack.penguinlib.PenguinLib;
 import uk.joshiejack.penguinlib.network.PenguinNetwork;
-import uk.joshiejack.penguinlib.util.PenguinLoader;
+import uk.joshiejack.penguinlib.util.registry.Packet;
 import uk.joshiejack.shopaholic.network.AbstractSetPlayerNBTPacket;
 
-@PenguinLoader.Packet(NetworkDirection.PLAY_TO_SERVER)
+@Packet(PacketFlow.SERVERBOUND)
 public class SwitchWalletPacket extends AbstractSetPlayerNBTPacket {
-    private boolean shared;
+    public static final ResourceLocation ID = PenguinLib.prefix("switch_wallet");
+    
+    @Override
+    public @NotNull ResourceLocation id() {
+        return ID;
+    }
+    
+    private final boolean shared;
 
     @SuppressWarnings("unused")
-    public SwitchWalletPacket() { super("ShopaholicSettings");}
     public SwitchWalletPacket(boolean shared) {
         super("ShopaholicSettings");
         this.shared = shared;
     }
 
-    @Override
-    public void encode(PacketBuffer buf) {
-        buf.writeBoolean(shared);
-    }
-
-    @Override
-    public void decode(PacketBuffer buf) {
+    public SwitchWalletPacket(FriendlyByteBuf buf) {
+        super("ShopaholicSettings");
         shared = buf.readBoolean();
     }
 
     @Override
-    public void handle(PlayerEntity player) {
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBoolean(shared);
+    }
+
+
+    @Override
+    public void handleServer(ServerPlayer player) {
         super.handle(player);
-        PenguinNetwork.sendToClient(new SetActiveWalletPacket(shared), (ServerPlayerEntity) player);
+        PenguinNetwork.sendToClient(player, new SetActiveWalletPacket(shared));
     }
 
     @Override
-    public void setData(CompoundNBT tag) {
+    public void setData(CompoundTag tag) {
         tag.putBoolean("SharedWallet", shared); //Set this data, YESSSSSSSSSSSSS
     }
 }

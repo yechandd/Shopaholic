@@ -1,31 +1,29 @@
 package uk.joshiejack.shopaholic.network;
 
-import net.minecraft.network.PacketBuffer;
-import uk.joshiejack.shopaholic.shop.Department;
-import uk.joshiejack.shopaholic.shop.Listing;
+import net.minecraft.network.FriendlyByteBuf;
+import uk.joshiejack.shopaholic.world.shop.Department;
+import uk.joshiejack.shopaholic.world.shop.Listing;
 
 public abstract class AbstractPurchaseItemPacket extends AbstractPacketSyncDepartment {
     protected Listing listing;
     protected int amount;
 
-    public AbstractPurchaseItemPacket() {}
     public AbstractPurchaseItemPacket(Department department, Listing listing, int amount) {
         super(department);
         this.listing = listing;
         this.amount = amount;
     }
 
-    @Override
-    public void encode(PacketBuffer buf) {
-        super.encode(buf);
-        buf.writeUtf(listing.id());
-        buf.writeInt(amount);
+    public AbstractPurchaseItemPacket(FriendlyByteBuf buf) {
+        super(buf);
+        listing = department.getListingByID(buf.readUtf(32767));
+        amount =  buf.readInt();
     }
 
     @Override
-    public void decode(PacketBuffer buf) {
-        super.decode(buf);
-        listing = department.getListingByID(buf.readUtf(32767));
-        amount =  buf.readInt();
+    public void write(FriendlyByteBuf buf) {
+        super.write(buf);
+        buf.writeUtf(listing.id());
+        buf.writeInt(amount);
     }
 }

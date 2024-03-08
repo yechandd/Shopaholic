@@ -1,14 +1,11 @@
 package uk.joshiejack.shopaholic.api.shop;
 
-import net.minecraft.entity.player.PlayerEntity;
-import uk.joshiejack.shopaholic.shop.Sublisting;
-import uk.joshiejack.shopaholic.shop.inventory.StockMechanic;
-
-import java.util.Random;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 
 public interface CostFormula {
     /**
-     * A cost formula will take the default cost value of an item and manipulate it in some way
+     * A cost formula will take the default cost days of an item and manipulate it in some way
      * this can make items cost more as there are less in stock, or they can get cheaper
      * or you all sorts of other mechanics
      *
@@ -20,5 +17,5 @@ public interface CostFormula {
      * @param random            a seeded random for this shop, if you need to do a random thing always use this instance
      * @return                  the cost of the item
      */
-    long getCost(long errorValue, PlayerEntity player, Sublisting<?> subListing, int stockLevel, StockMechanic stockMechanic, Random random);
+    long getCost(long errorValue, Player player, ISublisting subListing, int stockLevel, IStockMechanic stockMechanic, RandomSource random);
 }

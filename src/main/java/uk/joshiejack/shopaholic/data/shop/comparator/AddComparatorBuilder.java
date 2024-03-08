@@ -1,27 +1,23 @@
 package uk.joshiejack.shopaholic.data.shop.comparator;
 
-import uk.joshiejack.penguinlib.data.database.CSVUtils;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import uk.joshiejack.shopaholic.api.shop.Comparator;
+import uk.joshiejack.shopaholic.world.shop.comparator.AddComparator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 //Conditions
-public class AddComparatorBuilder extends ComparatorBuilder {
+public class AddComparatorBuilder implements ComparatorBuilder {
     protected final List<ComparatorBuilder> comparators = new ArrayList<>();
 
     @SuppressWarnings("unused")
-    public AddComparatorBuilder(String id, ComparatorBuilder... comparators) {
-        super(id);
+    public AddComparatorBuilder(ComparatorBuilder... comparators) {
         this.comparators.addAll(Arrays.asList(comparators));
     }
 
     @Override
-    public void save(ShopaholicDatabase data) {
-        comparators.forEach(comparator -> {
-            comparator.save(data);
-            data.addEntry("comparator_add", "ID,Comparator ID", CSVUtils.join(id, comparator.id));
-        });
+    public Comparator build() {
+        return new AddComparator(comparators.stream().map(ComparatorBuilder::build).toList());
     }
 }

@@ -1,15 +1,12 @@
 package uk.joshiejack.shopaholic.data.shop.comparator;
 
-import uk.joshiejack.penguinlib.data.database.CSVUtils;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import uk.joshiejack.shopaholic.api.shop.Comparator;
 
-public class KubeJSComparatorBuilder extends ComparatorBuilder {
-    protected KubeJSComparatorBuilder(String id) {
-        super(id);
-    }
+public class KubeJSComparatorBuilder implements ComparatorBuilder {
 
+    //TODO
     @Override
-    public void save(ShopaholicDatabase data) {
-        data.addEntry("comparator_kubejs", "ID", CSVUtils.join(id));
+    public Comparator build() {
+        return null;
     }
 }

@@ -1,17 +1,17 @@
 package uk.joshiejack.shopaholic.data.shop.listing;
 
-import uk.joshiejack.penguinlib.data.database.CSVUtils;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import uk.joshiejack.shopaholic.world.shop.Sublisting;
+import uk.joshiejack.shopaholic.world.shop.listing.BundleListing;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BundleListingBuilder extends SublistingBuilder<BundleListingBuilder> {
+public class BundleListingBuilder extends SublistingBuilder<List<SublistingBuilder<?>>> {
     private final List<SublistingBuilder<?>> builders = new ArrayList<>();
 
     @SuppressWarnings("unused")
-    public BundleListingBuilder(String bundleID) {
-        super("bundle", bundleID);
+    public BundleListingBuilder() {
+        super(new ArrayList<>());
     }
 
     @SuppressWarnings("unused")
@@ -21,10 +21,14 @@ public class BundleListingBuilder extends SublistingBuilder<BundleListingBuilder
     }
 
     @Override
-    public void save(ShopaholicDatabase data) {
-        builders.forEach(sublisting -> {
-            data.addEntry("bundles", "ID,Type,Data", CSVUtils.join(this.data, sublisting.type, sublisting.data));
-            sublisting.save(data);
-        });
+    public Sublisting build() {
+        return new Sublisting(id,
+                new BundleListing(builders.stream().map(s -> s.build().getProcessor()).toList()),
+                buildMaterials(),
+                tooltip,
+                icon,
+                name,
+                gold,
+                weight);
     }
 }

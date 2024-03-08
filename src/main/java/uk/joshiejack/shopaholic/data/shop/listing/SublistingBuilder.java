@@ -1,57 +1,63 @@
 package uk.joshiejack.shopaholic.data.shop.listing;
 
-import com.google.gson.JsonObject;
-import joptsimple.internal.Strings;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.tags.ITag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.random.Weight;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.joshiejack.penguinlib.util.icon.Icon;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import uk.joshiejack.penguinlib.util.icon.ItemIcon;
 import uk.joshiejack.shopaholic.data.shop.comparator.ComparatorBuilder;
-import uk.joshiejack.shopaholic.shop.listing.EntityListingHandler;
+import uk.joshiejack.shopaholic.world.shop.MaterialCost;
+import uk.joshiejack.shopaholic.world.shop.Sublisting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public abstract class SublistingBuilder<T extends SublistingBuilder<T>> {
+public abstract class SublistingBuilder<O> {
+    public static final Component EMPTY = Component.empty();
     public final List<ItemStack> materials = new ArrayList<>();
-    public final List<Pair<ITag.INamedTag<Item>, Integer>> tagMaterials = new ArrayList<>();
-    public final String data;
-    public final String type;
-    public String id;
-    public int gold = 0;
-    public int weight = 1;
-    public String name = Strings.EMPTY;
-    public String icon = "default";
-    public String tooltip = Strings.EMPTY;
+    public final List<Pair<TagKey<Item>, Integer>> tagMaterials = new ArrayList<>();
+    public final O data;
+    public String id = "default";
+    public long gold = 0;
+    public Weight weight = Sublisting.ONE;
+    public Component name = EMPTY;
+    public Icon icon = ItemIcon.EMPTY;
+    public List<Component> tooltip;
 
-    public SublistingBuilder(String type, String data) {
-        this.type = type;
+    public SublistingBuilder(O data) {
         this.data = data;
-        this.id = "default";
     }
+
+    public abstract Sublisting build();
 
     public static ItemListingBuilder item(Item item) {
-        return new ItemListingBuilder(item);
+        return new ItemListingBuilder(item.getDefaultInstance());
     }
 
-    public static PotionListingBuilder potion(String id, EffectInstance effect) {
-        return new PotionListingBuilder(id, effect);
+    public static MobEffectListingBuilder potion(MobEffectInstance effect) {
+        return new MobEffectListingBuilder(effect);
     }
 
-    public static EntityListingBuilder entity(String id, EntityListingHandler.EntitySpawnData spawnData) {
-        return new EntityListingBuilder(id, spawnData);
+    public static EntityListingBuilder entity(EntityType<?> spawnData) {
+        return new EntityListingBuilder(spawnData);
     }
 
-    public static DepartmentListingBuilder department(String departmentID) {
+    public static DepartmentListingBuilder department(ResourceLocation departmentID) {
         return new DepartmentListingBuilder(departmentID);
     }
 
-    public static BundleListingBuilder bundle(String bundleID) {
-        return new BundleListingBuilder(bundleID);
+    public static BundleListingBuilder bundle() {
+        return new BundleListingBuilder();
     }
 
     public static HealListingBuilder heal(float healAmount) {
@@ -66,58 +72,73 @@ public abstract class SublistingBuilder<T extends SublistingBuilder<T>> {
         return new KubeJSScriptListingBuilder(script);
     }
 
-    public static StatusListingBuilder playerStatus(String id, String field, ComparatorBuilder comparator) {
-        return new StatusListingBuilder("player_status", id, field, comparator);
+    public static StatusListingBuilder playerStatus(String field, ComparatorBuilder comparator) {
+        return new StatusListingBuilder("player_status", field, comparator);
     }
 
-    public static StatusListingBuilder teamStatus(String id, String field, ComparatorBuilder comparator) {
-        return new StatusListingBuilder("team_status", id, field, comparator);
+    public static StatusListingBuilder teamStatus(String field, ComparatorBuilder comparator) {
+        return new StatusListingBuilder("team_status", field, comparator);
     }
 
     public static GoldListingBuilder sell() {
         return new GoldListingBuilder();
     }
 
-    @SuppressWarnings("unchecked")
     public void id(String id) {
         this.id = id;
     }
 
-    @SuppressWarnings("unchecked")
-    public T cost(int cost) {
+    public SublistingBuilder<O> cost(int cost) {
         gold = cost;
-        return (T) this;
-    }
-
-    public SublistingBuilder<T> weight(int weight) {
-        this.weight = weight;
         return this;
     }
 
-    public SublistingBuilder<T> material(Item item, int count) {
+    public SublistingBuilder<O> weight(int weight) {
+        this.weight = Weight.of(weight);
+        return this;
+    }
+
+    public SublistingBuilder<O> material(Item item, int count) {
         materials.add(new ItemStack(item, count));
         return this;
     }
 
-    public SublistingBuilder<T> material(ITag.INamedTag<Item> stack, int count) {
+    public SublistingBuilder<O> material(TagKey<Item> stack, int count) {
         tagMaterials.add(Pair.of(stack, count));
         return this;
     }
 
-    public SublistingBuilder<T> name(String name) {
-        this.name = name;
+    public SublistingBuilder<O> name(String name) {
+        this.name = Component.literal(name);
         return this;
     }
 
-    public SublistingBuilder<T> icon(Icon icon) {
-        this.icon = icon.toJson(new JsonObject()).toString();
+    public SublistingBuilder<O> icon(Icon icon) {
+        this.icon = icon;
         return this;
     }
 
-    public SublistingBuilder tooltip(String tooltip) {
-        this.tooltip = tooltip;
+    public SublistingBuilder<O> tooltip(Component... tooltip) {
+        this.tooltip = List.of(tooltip);
         return this;
     }
 
-    public abstract void save(ShopaholicDatabase data);
+    public SublistingBuilder<O> tooltip(String string) {
+        this.tooltip = Arrays.stream(string.split("\n")).map(Component::literal).collect(Collectors.toList());
+        return this;
+    }
+
+    public List<MaterialCost> buildMaterials() {
+        if (materials.isEmpty() && tagMaterials.isEmpty()) return null;
+        List<MaterialCost> costs = new ArrayList<>();
+        for (ItemStack stack: materials) {
+            costs.add(new MaterialCost(Ingredient.of(stack), 1));
+        }
+
+        for (Pair<TagKey<Item>, Integer> pair: tagMaterials) {
+            costs.add(new MaterialCost(Ingredient.of(pair.getLeft()), pair.getRight()));
+        }
+
+        return costs;
+    }
 }

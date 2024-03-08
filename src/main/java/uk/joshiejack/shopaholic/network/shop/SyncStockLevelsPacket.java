@@ -1,39 +1,47 @@
 package uk.joshiejack.shopaholic.network.shop;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkDirection;
-import uk.joshiejack.penguinlib.util.PenguinLoader;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.network.protocol.PacketFlow;
+import uk.joshiejack.penguinlib.PenguinLib;
+import uk.joshiejack.penguinlib.util.registry.Packet;
 import uk.joshiejack.shopaholic.client.ShopaholicClient;
 import uk.joshiejack.shopaholic.network.AbstractPacketSyncDepartment;
-import uk.joshiejack.shopaholic.shop.Department;
-import uk.joshiejack.shopaholic.shop.inventory.Stock;
+import uk.joshiejack.shopaholic.world.shop.Department;
+import uk.joshiejack.shopaholic.world.shop.inventory.Stock;
 
-@PenguinLoader.Packet(NetworkDirection.PLAY_TO_CLIENT)
+import javax.annotation.Nonnull;
+
+@Packet(PacketFlow.CLIENTBOUND)
 public class SyncStockLevelsPacket extends AbstractPacketSyncDepartment {
-    private CompoundNBT data;
+    public static final ResourceLocation ID = PenguinLib.prefix("sync_stock_levels");
+    @Override
+    public @Nonnull ResourceLocation id() {
+        return ID;
+    }
+    private final CompoundTag data;
 
     @SuppressWarnings("unused")
-    public SyncStockLevelsPacket() {}
     public SyncStockLevelsPacket(Department department, Stock stock) {
         super(department);
         this.data = stock.serializeNBT();
     }
 
-    @Override
-    public void encode(PacketBuffer to) {
-        super.encode(to);
-        to.writeNbt(data);
+    public SyncStockLevelsPacket(FriendlyByteBuf from) {
+        super(from);
+        data = from.readNbt();
     }
 
     @Override
-    public void decode(PacketBuffer from) {
-        super.decode(from);
-        data = from.readNbt();
+    public void write(FriendlyByteBuf to) {        
+        super.write(to);
+        to.writeNbt(data);
     }
+
 
     @OnlyIn(Dist.CLIENT)
     public void handleClientPacket() {

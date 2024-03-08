@@ -1,40 +1,25 @@
 package uk.joshiejack.shopaholic.data.shop.comparator;
 
-import net.minecraft.item.Item;
-import net.minecraft.tags.ITag;
-import uk.joshiejack.penguinlib.data.database.CSVUtils;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class AbstractItemComparatorBuilder extends ComparatorBuilder {
-    private final List<Item> items = new ArrayList<>();
-    private final List<ITag.INamedTag<Item>> tags = new ArrayList<>();
-    private final String file;
+public abstract class AbstractItemComparatorBuilder implements ComparatorBuilder {
+    protected final List<Ingredient> ingredients = new ArrayList<>();
 
-    @SuppressWarnings("unused")
-    public AbstractItemComparatorBuilder(String id, String file) {
-        super(id);
-        this.file = file;
-    }
 
     @SuppressWarnings("unused")
     public AbstractItemComparatorBuilder countItem(Item item) {
-        items.add(item);
+        ingredients.add(Ingredient.of(item));
         return this;
     }
 
     @SuppressWarnings("unused")
-    public AbstractItemComparatorBuilder countTag(ITag.INamedTag<Item> tag) {
-        tags.add(tag);
+    public AbstractItemComparatorBuilder countTag(TagKey<Item> tag) {
+        ingredients.add(Ingredient.of(tag));
         return this;
-    }
-
-    @Override
-    public void save(ShopaholicDatabase data) {
-        items.forEach(item -> data.addEntry(file, "ID,Item", CSVUtils.join(id, Objects.requireNonNull(item.getRegistryName()).toString())));
-        tags.forEach(tag -> data.addEntry(file, "ID,Item", CSVUtils.join(id, ("tag:" + tag.getName()))));
     }
 }

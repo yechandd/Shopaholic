@@ -1,18 +1,17 @@
 package uk.joshiejack.shopaholic.data.shop.comparator;
 
-import uk.joshiejack.penguinlib.data.database.CSVUtils;
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import uk.joshiejack.shopaholic.api.shop.Comparator;
+import uk.joshiejack.shopaholic.world.shop.comparator.NumberComparator;
 
-public class NumberComparatorBuilder extends ComparatorBuilder {
+public class NumberComparatorBuilder implements ComparatorBuilder {
     private final int number;
 
-    protected NumberComparatorBuilder(String id, int number) {
-        super(id);
+    protected NumberComparatorBuilder(int number) {
         this.number = number;
     }
 
     @Override
-    public void save(ShopaholicDatabase data) {
-        data.addEntry("comparator_number", "ID,Number", CSVUtils.join(id, number));
+    public Comparator build() {
+        return new NumberComparator(number);
     }
 }

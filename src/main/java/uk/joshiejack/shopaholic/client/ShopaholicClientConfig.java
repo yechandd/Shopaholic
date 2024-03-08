@@ -1,19 +1,19 @@
 package uk.joshiejack.shopaholic.client;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ShopaholicClientConfig {
-    public static ForgeConfigSpec.BooleanValue enableShippingTicker;
-    public static ForgeConfigSpec.BooleanValue enableClockHUD;
-    public static ForgeConfigSpec.BooleanValue enableGoldHUD;
-    public static ForgeConfigSpec.BooleanValue enableGoldIconHUD;
-    public static ForgeConfigSpec.BooleanValue enableInventoryView;
-    public static ForgeConfigSpec.IntValue goldHUDX;
-    public static ForgeConfigSpec.IntValue goldHUDY;
-    public static ForgeConfigSpec.EnumValue<GoldRenderSide> goldRenderSide;
-    public static ForgeConfigSpec.BooleanValue enableSellValueTooltip;
+    public static ModConfigSpec.BooleanValue enableShippingTicker;
+    public static ModConfigSpec.BooleanValue enableClockHUD;
+    public static ModConfigSpec.BooleanValue enableGoldHUD;
+    public static ModConfigSpec.BooleanValue enableGoldIconHUD;
+    public static ModConfigSpec.BooleanValue enableInventoryView;
+    public static ModConfigSpec.IntValue goldHUDX;
+    public static ModConfigSpec.IntValue goldHUDY;
+    public static ModConfigSpec.EnumValue<GoldRenderSide> goldRenderSide;
+    public static ModConfigSpec.BooleanValue enableSellValueTooltip;
 
-    ShopaholicClientConfig(ForgeConfigSpec.Builder builder) {
+    ShopaholicClientConfig(ModConfigSpec.Builder builder) {
         builder.push("General");
         enableInventoryView = builder.define("Enable inventory view in shops", true);
         enableShippingTicker = builder.define("Enable shipping daily ticker", true);
@@ -29,8 +29,8 @@ public class ShopaholicClientConfig {
         builder.pop();
     }
 
-    public static ForgeConfigSpec create() {
-        return new ForgeConfigSpec.Builder().configure(ShopaholicClientConfig::new).getValue();
+    public static ModConfigSpec create() {
+        return new ModConfigSpec.Builder().configure(ShopaholicClientConfig::new).getValue();
     }
 
     public enum GoldRenderSide {

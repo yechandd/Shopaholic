@@ -1,0 +1,96 @@
+{
+  "conditions": [
+    {
+      "type": "shopaholic:named",
+      "pattern": "George"
+    }
+  ],
+  "icon": {
+    "type": "penguinlib:item",
+    "item": {
+      "Count": 1,
+      "id": "minecraft:crafting_table"
+    }
+  },
+  "listings": [
+    {
+      "sublistings": [
+        {
+          "listing": {
+            "type": "shopaholic:item",
+            "stack": {
+              "Count": 1,
+              "id": "minecraft:furnace"
+            }
+          },
+          "materials": [
+            {
+              "cost": 8,
+              "item": {
+                "tag": "forge:cobblestone"
+              }
+            }
+          ]
+        }
+      ],
+      "unique_id": "furnace"
+    },
+    {
+      "stock_mechanic": "shopaholic:only_one",
+      "sublistings": [
+        {
+          "listing": {
+            "type": "shopaholic:item",
+            "stack": {
+              "Count": 1,
+              "id": "minecraft:piston"
+            }
+          },
+          "materials": [
+            {
+              "cost": 6,
+              "item": {
+                "tag": "forge:cobblestone"
+              }
+            },
+            {
+              "cost": 1,
+              "item": {
+                "tag": "forge:dusts/redstone"
+              }
+            },
+            {
+              "cost": 2,
+              "item": {
+                "tag": "minecraft:planks"
+              }
+            },
+            {
+              "cost": 1,
+              "item": {
+                "tag": "forge:ingots/iron"
+              }
+            }
+          ]
+        }
+      ],
+      "unique_id": "stairs"
+    },
+    {
+      "sublistings": [
+        {
+          "listing": {
+            "type": "shopaholic:department",
+            "department": "shopaholic:test_department"
+          }
+        }
+      ],
+      "unique_id": "piggy_bank"
+    }
+  ],
+  "method": "right_click",
+  "name": "Crafting Central",
+  "shop": "shopaholic:piggy_bank_v2",
+  "vendor_data": "minecraft:pig",
+  "vendor_type": "entity"
+}

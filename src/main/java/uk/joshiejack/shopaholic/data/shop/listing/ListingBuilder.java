@@ -1,18 +1,30 @@
 package uk.joshiejack.shopaholic.data.shop.listing;
 
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
-import uk.joshiejack.shopaholic.data.shop.condition.ConditionBuilder;
+import net.minecraft.resources.ResourceLocation;
+import uk.joshiejack.shopaholic.api.shop.Condition;
+import uk.joshiejack.shopaholic.world.shop.Listing;
+import uk.joshiejack.shopaholic.world.shop.Sublisting;
+import uk.joshiejack.shopaholic.world.shop.inventory.StockMechanic;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListingBuilder {
     public final String id;
-    public String stockMechanic = "unlimited";
+    public ResourceLocation stockMechanic = StockMechanic.UNLIMITED_ID;
     public String costFormula = "default";
-    public final List<ConditionBuilder> conditions = new ArrayList<>();
+    public final List<Condition> conditions = new ArrayList<>();
     public final List<SublistingBuilder<?>> sublistings = new ArrayList<>();
-    public ShopaholicDatabase.StockMechanicBuilder stockMechanicBuilder;
+
+    public Listing build() {
+        return new Listing(id, costFormula, stockMechanic,
+                conditions,
+                buildSublistingList());
+    }
+
+    private List<Sublisting> buildSublistingList() {
+        return sublistings.stream().map(SublistingBuilder::build).toList();
+    }
 
     public ListingBuilder(String id) {
         this.id = id;
@@ -23,7 +35,7 @@ public class ListingBuilder {
     }
 
     public ListingBuilder addSublisting(SublistingBuilder<?> sublisting) {
-        if (sublistings.size() > 0) {
+        if (!sublistings.isEmpty()) {
             if (sublistings.size() == 1)
                 sublistings.get(0).id("item_1");
             sublisting.id("item_" + (sublistings.size() + 1));
@@ -33,7 +45,7 @@ public class ListingBuilder {
         return this;
     }
 
-    public ListingBuilder stockMechanic(String stockMechanic) {
+    public ListingBuilder stockMechanic(ResourceLocation stockMechanic) {
         this.stockMechanic = stockMechanic;
         return this;
     }
@@ -43,14 +55,8 @@ public class ListingBuilder {
         return this;
     }
 
-    public ListingBuilder condition(ConditionBuilder condition) {
+    public ListingBuilder condition(Condition condition) {
         conditions.add(condition);
-        return this;
-    }
-
-    public ListingBuilder stockMechanic(ShopaholicDatabase.StockMechanicBuilder stockMechanic) {
-        this.stockMechanicBuilder = stockMechanic;
-        this.stockMechanic = stockMechanic.id;
         return this;
     }
 }

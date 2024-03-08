@@ -1,21 +1,19 @@
 package uk.joshiejack.shopaholic.command;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableInt;
-import uk.joshiejack.penguinlib.util.helpers.PlayerHelper;
+import uk.joshiejack.penguinlib.util.helper.PlayerHelper;
 import uk.joshiejack.shopaholic.ShopaholicServerConfig;
-import uk.joshiejack.shopaholic.shipping.Market;
-import uk.joshiejack.shopaholic.shipping.Shipping;
-import uk.joshiejack.shopaholic.shipping.ShippingRegistry;
+import uk.joshiejack.shopaholic.world.shipping.Market;
+import uk.joshiejack.shopaholic.world.shipping.Shipping;
+import uk.joshiejack.shopaholic.world.shipping.ShippingRegistry;
 
 public class ShipCommand {
-    public static ArgumentBuilder<CommandSource, ?> register() {
+    public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("ship").requires(ctx -> ShopaholicServerConfig.shipCommandEnabled.get())
                 .then(Commands.literal("hand")
                         .executes(ctx -> {
@@ -24,14 +22,14 @@ public class ShipCommand {
                                 long value = ShippingRegistry.getValue(held);
                                 if (value > 0) {
                                     Market.get(ctx.getSource().getLevel()).getShippingForPlayer(ctx.getSource().getPlayerOrException()).add(held.copy());
-                                    ITextComponent name = held.getHoverName();
+                                    Component name = held.getHoverName();
                                     held.shrink(held.getCount()); //Kill the item
-                                    ctx.getSource().sendSuccess(new TranslationTextComponent("command.shopaholic.ship.success", name), false);
+                                    ctx.getSource().sendSuccess(() -> Component.translatable("command.shopaholic.ship.success", name), false);
                                     return 1;
                                 }
                             }
 
-                            ctx.getSource().sendFailure(new StringTextComponent("command.shopaholic.ship.no_value"));
+                            ctx.getSource().sendFailure(Component.translatable("command.shopaholic.ship.no_value"));
                             return 0;
                         }))
                 .then(Commands.literal("inventory")
@@ -50,7 +48,7 @@ public class ShipCommand {
                                 }
                             });
 
-                            ctx.getSource().sendSuccess(new TranslationTextComponent("command.shopaholic.ship.success_many",
+                            ctx.getSource().sendSuccess(() -> Component.translatable("command.shopaholic.ship.success_many",
                                     successcount.intValue(), failcount.intValue()), false);
                             return successcount.intValue() > 0 ? 1 : 0;
                         }));

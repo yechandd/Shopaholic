@@ -1,6 +1,6 @@
 package uk.joshiejack.shopaholic.api.bank;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public interface IBank {
     /**
@@ -9,7 +9,7 @@ public interface IBank {
      * @param player        the player to get the balance of
      * @return   the balance
      */
-    long getBalance(PlayerEntity player);
+    long getBalance(Player player);
 
     /**
      * Use this to decrease the balance of the player by the set amount
@@ -18,7 +18,7 @@ public interface IBank {
      * @param player        the player to increase the balance of
      * @param amount        the amount to increase it by
      */
-    void increaseBalance(PlayerEntity player, long amount);
+    void increaseBalance(Player player, long amount);
 
     /**
      * Use this to decrease the balance of the player by the set amount
@@ -27,5 +27,5 @@ public interface IBank {
      * @param player        the player to decrease the balance of
      * @param amount        the amount to decrease it by
      */
-    void decreaseBalance(PlayerEntity player, long amount);
+    void decreaseBalance(Player player, long amount);
 }

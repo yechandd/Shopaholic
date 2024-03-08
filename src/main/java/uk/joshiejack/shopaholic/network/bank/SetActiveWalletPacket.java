@@ -1,34 +1,45 @@
 package uk.joshiejack.shopaholic.network.bank;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import uk.joshiejack.penguinlib.util.PenguinLoader;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
+import uk.joshiejack.penguinlib.PenguinLib;
+import uk.joshiejack.penguinlib.util.registry.Packet;
 import uk.joshiejack.shopaholic.api.bank.WalletType;
 import uk.joshiejack.shopaholic.client.bank.Wallet;
 import uk.joshiejack.shopaholic.network.AbstractSetPlayerNBTPacket;
 
-@PenguinLoader.Packet(NetworkDirection.PLAY_TO_CLIENT)
+@Packet(PacketFlow.CLIENTBOUND)
 public class SetActiveWalletPacket extends AbstractSetPlayerNBTPacket {
-    private boolean shared;
+    public static final ResourceLocation ID = PenguinLib.prefix("set_active_wallet");
 
-    public SetActiveWalletPacket() { super("ShopaholicSettings");}
+    @Override
+    public @NotNull ResourceLocation id() {
+        return ID;
+    }
+
+    private final boolean shared;
+
     public SetActiveWalletPacket(boolean shared) {
         super("ShopaholicSettings");
         this.shared = shared;
     }
 
-    @Override
-    public void encode(PacketBuffer pb) {
-        pb.writeBoolean(shared);
-    }
-
-    public void decode(PacketBuffer pb) {
+    public SetActiveWalletPacket (FriendlyByteBuf pb) {
+        super("ShopaholicSettings");
         shared = pb.readBoolean();
     }
 
     @Override
-    public void setData(CompoundNBT tag) {
+    public void write(FriendlyByteBuf pb) {
+        pb.writeBoolean(shared);
+    }
+
+
+    @Override
+    public void setData(CompoundTag tag) {
         tag.putBoolean("SharedWallet", shared);
         Wallet.setActive(shared ? WalletType.SHARED : WalletType.PERSONAL);
     }

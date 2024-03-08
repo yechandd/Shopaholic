@@ -1,13 +1,12 @@
 package uk.joshiejack.shopaholic.data;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraftforge.common.data.LanguageProvider;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.text.WordUtils;
 import uk.joshiejack.shopaholic.Shopaholic;
 
 public class ShopaholicLanguage extends LanguageProvider {
-    public ShopaholicLanguage(DataGenerator gen) {
+    public ShopaholicLanguage(PackOutput gen) {
         super(gen, Shopaholic.MODID, "en_us");
     }
 
@@ -16,7 +15,7 @@ public class ShopaholicLanguage extends LanguageProvider {
     protected void addTranslations() {
         add("command.shopaholic.ship.success", "You successfully shipped %s");
         add("command.shopaholic.ship.success_many", "You successfully shipped %s items and failed to ship %s items");
-        add("command.shopaholic.ship.no_value", "The item you tried to ship had no value");
+        add("command.shopaholic.ship.no_value", "The item you tried to ship had no days");
         add("gui.shopaholic.shop.heal", "Health Restoration");
         add("gui.shopaholic.shop.free", "Free");
         add("gui.shopaholic.shop.error", "Error");
@@ -41,9 +40,8 @@ public class ShopaholicLanguage extends LanguageProvider {
         addManager("shipping", "Shipping Log");
         addManager("combined", "Combined Earnings");
 
-        ForgeRegistries.ITEMS.getValues()
-                .stream().filter(i -> i.getRegistryName().getNamespace().equals(Shopaholic.MODID))
-                .forEach(item -> add(item, WordUtils.capitalizeFully(item.getRegistryName().getPath().replace("_", " "))));
+        Shopaholic.ShopaholicItems.ITEMS.getEntries()
+                .forEach(item -> add(item.get(), WordUtils.capitalizeFully(item.getId().getPath().replace("_", " "))));
     }
 
     private void addManager(String name, String text) {

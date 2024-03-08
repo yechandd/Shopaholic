@@ -1,19 +1,18 @@
 package uk.joshiejack.shopaholic.client.gui.widget.button;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import joptsimple.internal.Strings;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import uk.joshiejack.penguinlib.client.gui.MultiTooltip;
 import uk.joshiejack.penguinlib.client.gui.book.Book;
 import uk.joshiejack.penguinlib.client.gui.widget.AbstractButton;
 import uk.joshiejack.penguinlib.network.PenguinNetwork;
-import uk.joshiejack.penguinlib.util.helpers.StringHelper;
+import uk.joshiejack.penguinlib.util.helper.StringHelper;
+import uk.joshiejack.shopaholic.Shopaholic;
 import uk.joshiejack.shopaholic.api.bank.WalletType;
 import uk.joshiejack.shopaholic.client.bank.Wallet;
 import uk.joshiejack.shopaholic.network.bank.SwitchWalletPacket;
@@ -23,32 +22,35 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class SwitchAccountButton extends AbstractButton<Book> {
-    private static final List<ITextComponent> active = Lists.newArrayList(new TranslationTextComponent("gui.shopaholic.manager.wallet.currently",
-            new TranslationTextComponent("gui.shopaholic.manager.wallet.active").withStyle(TextFormatting.GREEN)));
-    private static final List<ITextComponent> inactive = Lists.newArrayList(new TranslationTextComponent("gui.shopaholic.manager.wallet.currently",
-            new TranslationTextComponent("gui.shopaholic.manager.wallet.inactive").withStyle(TextFormatting.RED)),
-            new TranslationTextComponent("gui.shopaholic.manager.wallet.switch"));
-    private final WalletType type;
+    public static final ResourceLocation TICK = new ResourceLocation(Shopaholic.MODID, "tick");
+    public static final ResourceLocation TICK_HIGHLIGHTED = new ResourceLocation(Shopaholic.MODID, "tick_highlighted");
+    public static final ResourceLocation CROSS = new ResourceLocation(Shopaholic.MODID, "cross");
+    public static final ResourceLocation CROSS_HIGHLIGHTED = new ResourceLocation(Shopaholic.MODID, "cross_highlighted");
+    private static final List<Component> active = Lists.newArrayList(Component.translatable("gui.shopaholic.manager.wallet.currently",
+            Component.translatable("gui.shopaholic.manager.wallet.active").withStyle(ChatFormatting.GREEN)));
+    private static final List<Component> inactive = Lists.newArrayList(Component.translatable("gui.shopaholic.manager.wallet.currently",
+            Component.translatable("gui.shopaholic.manager.wallet.inactive").withStyle(ChatFormatting.RED)),
+            Component.translatable("gui.shopaholic.manager.wallet.switch"));
+    private final boolean isWalletActive;
 
     public SwitchAccountButton(WalletType type, Book book, int x, int y) {
-        super(book, x, y, 7, 8, new StringTextComponent(Strings.EMPTY), (btn) -> {
+        super(book, x, y, 7, 8, Component.empty(), (btn) -> {
             boolean isWalletActive = Wallet.getActive() == Wallet.getWallet(type);
             if (!isWalletActive)
                 PenguinNetwork.sendToServer(new SwitchWalletPacket(Wallet.getActive() == Wallet.getWallet(WalletType.PERSONAL)));
-        }, (btn, mtx, mX, mY) -> {
-            boolean isWalletActive = Wallet.getActive() == Wallet.getWallet(type);
-            GuiUtils.drawHoveringText(mtx, isWalletActive ? active : inactive, mX, mY, book.width, book.height, 200, book.minecraft().font);
         });
-        this.type = type;
+        this.isWalletActive = Wallet.getActive() == Wallet.getWallet(type);
+        this.setMultiTooltip(MultiTooltip.create(isWalletActive ? active : inactive));
     }
 
     @Override
-    protected void renderButton(@Nonnull MatrixStack matrix, int mouseX, int mouseY, float partialTicks, boolean hovered) {
+    protected void renderButton(@Nonnull GuiGraphics matrix, int mouseX, int mouseY, float partialTicks, boolean hovered) {
         if (visible) {
             StringHelper.enableUnicode();
             screen.bindLeftTexture();
-            boolean isWalletActive = Wallet.getActive() == Wallet.getWallet(type);
-            blit(matrix, x, y, 31 + (!isWalletActive ? 10 : 0) + (hovered ? 17 : 0), 248, 7 + (isWalletActive ? 3 :0), 8);
+            //31 + (!isWalletActive ? 10 : 0) + (hovered ? 17 : 0), 248
+            ResourceLocation sprite = isWalletActive ? (hovered ? TICK_HIGHLIGHTED : TICK) : (hovered ? CROSS_HIGHLIGHTED : CROSS);
+            matrix.blitSprite(sprite, getX(), getY(), 7 + (isWalletActive ? 3 :0), 8);
             StringHelper.disableUnicode();
         }
     }

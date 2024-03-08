@@ -1,20 +1,30 @@
 package uk.joshiejack.shopaholic.network.bank;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import uk.joshiejack.penguinlib.network.PenguinPacket;
-import uk.joshiejack.penguinlib.util.PenguinLoader;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.PacketFlow;
+import org.jetbrains.annotations.NotNull;
+import uk.joshiejack.penguinlib.PenguinLib;
+import uk.joshiejack.penguinlib.network.packet.PenguinPacket;
+import uk.joshiejack.penguinlib.util.registry.Packet;
 import uk.joshiejack.shopaholic.api.bank.WalletType;
 import uk.joshiejack.shopaholic.client.bank.Wallet;
 
-@PenguinLoader.Packet(NetworkDirection.PLAY_TO_CLIENT)
-public class SyncGoldPacket extends PenguinPacket {
-    private WalletType type;
-    private long balance, income, expenses;
+@Packet(PacketFlow.CLIENTBOUND)
+public class SyncGoldPacket implements PenguinPacket {
+    public static final ResourceLocation ID = PenguinLib.prefix("sync_gold");
+    @Override
+    public @NotNull ResourceLocation id() {
+        return ID;
+    }
+
+    private final WalletType type;
+    private final long balance;
+    private final long income;
+    private final long expenses;
 
     @SuppressWarnings("unused")
-    public SyncGoldPacket() {}
     public SyncGoldPacket(WalletType type, long balance, long income, long expenses) {
         this.type = type;
         this.balance = balance;
@@ -22,16 +32,7 @@ public class SyncGoldPacket extends PenguinPacket {
         this.expenses = expenses;
     }
 
-    @Override
-    public void encode(PacketBuffer to) {
-        to.writeBoolean(type == WalletType.SHARED);
-        to.writeLong(balance);
-        to.writeLong(income);
-        to.writeLong(expenses);
-    }
-
-    @Override
-    public void decode(PacketBuffer from) {
+    public SyncGoldPacket(FriendlyByteBuf from) {
         type = from.readBoolean() ? WalletType.SHARED : WalletType.PERSONAL;
         balance = from.readLong();
         income = from.readLong();
@@ -39,7 +40,16 @@ public class SyncGoldPacket extends PenguinPacket {
     }
 
     @Override
-    public void handle(PlayerEntity player) {
+    public void write(FriendlyByteBuf to) {        to.writeBoolean(type == WalletType.SHARED);
+        to.writeLong(balance);
+        to.writeLong(income);
+        to.writeLong(expenses);
+    }
+
+
+
+    @Override
+    public void handle(Player player) {
         Wallet.setGold(type, balance, income, expenses);
     }
 }

@@ -1,38 +1,38 @@
 package uk.joshiejack.shopaholic.network;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import uk.joshiejack.penguinlib.network.PenguinPacket;
-import uk.joshiejack.shopaholic.shipping.Shipping;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.FriendlyByteBuf;
+import uk.joshiejack.penguinlib.network.packet.PenguinPacket;
+import uk.joshiejack.shopaholic.world.shipping.Shipping;
 
 import java.util.Set;
 
-public abstract class AbstractSyncSoldItemList extends PenguinPacket {
-    private ListNBT listNBT;
+public abstract class AbstractSyncSoldItemList implements PenguinPacket {
+    private final ListTag listNBT;
 
-    public AbstractSyncSoldItemList() {}
     public AbstractSyncSoldItemList(Set<Shipping.SoldItem> set) {
         listNBT = Shipping.writeHolderCollection(set);
     }
 
-    public void encode(PacketBuffer to) {
-        CompoundNBT tag = new CompoundNBT();
-        tag.put("list", listNBT);
-        to.writeNbt(tag);
-    }
-
-    public void decode(PacketBuffer from) {
-        CompoundNBT tag = from.readNbt();
+    public AbstractSyncSoldItemList(FriendlyByteBuf from) {
+        CompoundTag tag = from.readNbt();
         assert tag != null;
         listNBT = tag.getList("list", 10);
     }
 
     @Override
-    public void handle(PlayerEntity player) {
+    public void write(FriendlyByteBuf to) {
+        CompoundTag tag = new CompoundTag();
+        tag.put("list", listNBT);
+        to.writeNbt(tag);
+    }
+
+    @Override
+    public void handle(Player player) {
         handle(listNBT);
     }
 
-    protected abstract void handle(ListNBT list);
+    protected abstract void handle(ListTag list);
 }

@@ -1,20 +1,19 @@
 package uk.joshiejack.shopaholic.command;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkHooks;
-import uk.joshiejack.shopaholic.inventory.EconomyManagerContainer;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.SimpleMenuProvider;
+import uk.joshiejack.shopaholic.world.inventory.EconomyManagerMenu;
 
 public class ManagerCommand {
-    public static ArgumentBuilder<CommandSource, ?> register() {
+    public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("manager")
                 .executes(ctx -> {
-                    NetworkHooks.openGui(ctx.getSource().getPlayerOrException(),
-                            new SimpleNamedContainerProvider((id, inv, p) -> new EconomyManagerContainer(id),
-                                    new TranslationTextComponent("gui.shopaholic.manager")));
+                    ctx.getSource().getPlayerOrException()
+                            .openMenu(new SimpleMenuProvider((id, inv, p) -> new EconomyManagerMenu(id),
+                                    Component.translatable("gui.shopaholic.manager")));
                     return 1;
                 });
     }

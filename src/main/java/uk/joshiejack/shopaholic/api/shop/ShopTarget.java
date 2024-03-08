@@ -1,25 +1,25 @@
 package uk.joshiejack.shopaholic.api.shop;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import uk.joshiejack.shopaholic.shop.input.EntityShopInput;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import uk.joshiejack.shopaholic.world.shop.input.EntityShopInput;
 
 public class ShopTarget {
-    private World world; //The world that this target is in
+    private Level world; //The world that this target is in
     private BlockPos pos; //The position of this target
     private Entity entity; //The entity associated with this target, EITHER the actual entity OR the player if it's an item or blockstate
-    private PlayerEntity player; //The player entity that was interacting with this target
+    private Player player; //The player entity that was interacting with this target
     private ItemStack stack; //The stack that is interacting, whether it's relevant or not
     private ShopInput<?> input; //The input handler, for special situations
 
     @SuppressWarnings("unused")
     public ShopTarget() {}
-    public ShopTarget(World world, BlockPos pos, Entity entity, PlayerEntity player, ItemStack stack, ShopInput<?> input) {
+    public ShopTarget(Level world, BlockPos pos, Entity entity, Player player, ItemStack stack, ShopInput<?> input) {
         this.world = world;
         this.pos = pos;
         this.entity = entity;
@@ -28,11 +28,11 @@ public class ShopTarget {
         this.input = input;
     }
 
-    public static ShopTarget fromPlayer(PlayerEntity player) {
-        return new ShopTarget(player.level, player.blockPosition(), player, player, player.getMainHandItem(), new EntityShopInput(player));
+    public static ShopTarget fromPlayer(Player player) {
+        return new ShopTarget(player.level(), player.blockPosition(), player, player, player.getMainHandItem(), new EntityShopInput(player));
     }
 
-    public static ShopTarget fromSource(CommandSource source) {
+    public static ShopTarget fromSource(CommandSourceStack source) {
         try {
             return fromPlayer(source.getPlayerOrException());
         } catch (CommandSyntaxException ex) { return null; }
@@ -42,7 +42,7 @@ public class ShopTarget {
         return new ShopTarget(world, pos, player, player, stack, input);
     }
 
-    public World getWorld() {
+    public Level getLevel() {
         return world;
     }
 
@@ -54,7 +54,7 @@ public class ShopTarget {
         return entity;
     }
 
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 

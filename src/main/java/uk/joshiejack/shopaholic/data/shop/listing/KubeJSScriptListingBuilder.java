@@ -1,12 +1,14 @@
 package uk.joshiejack.shopaholic.data.shop.listing;
 
-import uk.joshiejack.shopaholic.data.ShopaholicDatabase;
+import uk.joshiejack.shopaholic.world.shop.Sublisting;
 
-public class KubeJSScriptListingBuilder extends SublistingBuilder<KubeJSScriptListingBuilder> {
+public class KubeJSScriptListingBuilder extends SublistingBuilder<String> {
     public KubeJSScriptListingBuilder(String script) {
-        super("kubejs", script);
+        super(script);
     }
 
     @Override
-    public void save(ShopaholicDatabase data) {}
+    public Sublisting build() {
+        return null; //TODO
+    }
 }

@@ -1,41 +1,38 @@
 package uk.joshiejack.shopaholic.client;
 
-import joptsimple.internal.Strings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import uk.joshiejack.penguinlib.client.gui.HUDRenderer;
 import uk.joshiejack.penguinlib.client.gui.book.Book;
 import uk.joshiejack.penguinlib.client.gui.book.tab.Tab;
-import uk.joshiejack.penguinlib.inventory.AbstractBookContainer;
-import uk.joshiejack.penguinlib.util.helpers.TimeHelper;
+import uk.joshiejack.penguinlib.util.helper.TimeHelper;
+import uk.joshiejack.penguinlib.world.inventory.AbstractBookMenu;
 import uk.joshiejack.shopaholic.Shopaholic;
 import uk.joshiejack.shopaholic.client.gui.DepartmentScreen;
 import uk.joshiejack.shopaholic.client.gui.page.PageEconomyManager;
-import uk.joshiejack.shopaholic.inventory.DepartmentContainer;
-import uk.joshiejack.shopaholic.plugins.SimplySeasonsPlugin;
+import uk.joshiejack.shopaholic.plugin.SimplySeasonsPlugin;
+import uk.joshiejack.shopaholic.world.inventory.DepartmentMenu;
+import uk.joshiejack.shopaholic.world.inventory.ShopaholicMenus;
 
-@OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = Shopaholic.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ShopaholicClient {
-    public static final ITextComponent EMPTY_STRING = new StringTextComponent(Strings.EMPTY);
+    public static final Component EMPTY_STRING = Component.empty();
 
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        ScreenManager.register(Shopaholic.ShopaholicContainers.BOOK.get(),
-                ((AbstractBookContainer container, PlayerInventory inv, ITextComponent text) ->
+    public static void onRegisterScreens(RegisterMenuScreensEvent event) {
+        event.register(ShopaholicMenus.BOOK.get(),
+                ((AbstractBookMenu container, Inventory inv, Component text) ->
                         Book.getInstance(Shopaholic.MODID, container, inv, text, (book) -> {
-                            ITextComponent manager = new TranslationTextComponent("gui." + Shopaholic.MODID + ".manager");
+                            Component manager = Component.translatable("gui." + Shopaholic.MODID + ".manager");
                             book.withTab(new Tab(manager, PageEconomyManager.ICON)).withPage(new PageEconomyManager(manager));
                             //Setup colours
                             book.fontColor1 = 4210752;
@@ -44,16 +41,18 @@ public class ShopaholicClient {
                             book.lineColor2 = 0xFF7F8589;
                         })
                 ));
+        event.register(ShopaholicMenus.SHOP.get(),
+                ((DepartmentMenu container, Inventory inv, Component text) -> new DepartmentScreen(container, inv)));
+    }
 
-        ScreenManager.register(Shopaholic.ShopaholicContainers.SHOP.get(),
-                ((DepartmentContainer container, PlayerInventory inv, ITextComponent text) -> new DepartmentScreen(container, inv)));
-
-        boolean isSimplySeasonsEnabled = SimplySeasonsPlugin.loaded && SimplySeasonsPlugin.isHUDEnabled();
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        boolean isSimplySeasonsEnabled =  ModList.get().isLoaded("simplyseasons") && SimplySeasonsPlugin.isHUDEnabled();
         if (ShopaholicClientConfig.enableClockHUD.get() && !isSimplySeasonsEnabled) {
-            HUDRenderer.RENDERERS.put(World.OVERWORLD, new HUDRenderer.HUDRenderData() {
+            HUDRenderer.RENDERERS.put(Level.OVERWORLD, new HUDRenderer.HUDRenderData() {
                 @Override
-                public ITextComponent getHeader(Minecraft mc) {
-                    return  new TranslationTextComponent("Day %s", 1 + TimeHelper.getElapsedDays(mc.level.getDayTime()));
+                public Component getHeader(Minecraft mc) {
+                    return  Component.translatable("Day %s", 1 + TimeHelper.getElapsedDays(mc.level.getDayTime()));
                 }
 
                 @Override
@@ -64,7 +63,6 @@ public class ShopaholicClient {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void refreshShop() {
         Screen screen = Minecraft.getInstance().screen;
         if (screen instanceof DepartmentScreen) {

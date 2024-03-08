@@ -1,7 +1,7 @@
 package uk.joshiejack.shopaholic.api.shop;
 
 import com.google.common.collect.Maps;
-import uk.joshiejack.shopaholic.shop.inventory.StockMechanic;
+import uk.joshiejack.shopaholic.world.shop.inventory.StockMechanic;
 
 import java.util.Map;
 
