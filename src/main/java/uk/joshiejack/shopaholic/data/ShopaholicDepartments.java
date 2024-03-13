@@ -31,7 +31,7 @@ public class ShopaholicDepartments extends AbstractPenguinRegistryProvider<Depar
     @Override
     protected void buildRegistry(Map<ResourceLocation, Department> map) {
         ShopBuilder.of(ShopaholicShops.PIGGY_BANK_V_2)
-                .vendor(Vendor.entity("pig", EntityType.PIG))
+                .vendor(Vendor.entity(EntityType.PIG))
                 .condition(NamedCondition.named("George"))
                 .openWith(InputMethod.RIGHT_CLICK)
                 .department(DepartmentBuilder.of(Shopaholic.prefix("test_department"), new ItemIcon(Items.GOLD_INGOT.getDefaultInstance()), Component.literal("Gold Store"))
