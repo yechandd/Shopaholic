@@ -18,6 +18,7 @@ import uk.joshiejack.shopaholic.world.shop.Sublisting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public abstract class SublistingBuilder<O> {
     public Weight weight = Sublisting.ONE;
     public Component name = EMPTY;
     public Icon icon = ItemIcon.EMPTY;
-    public List<Component> tooltip;
+    public List<Component> tooltip = Collections.emptyList();
 
     public SublistingBuilder(O data) {
         this.data = data;
@@ -42,6 +43,10 @@ public abstract class SublistingBuilder<O> {
 
     public static ItemListingBuilder item(Item item) {
         return new ItemListingBuilder(item.getDefaultInstance());
+    }
+
+    public static ItemListingBuilder item(ItemStack stack) {
+        return new ItemListingBuilder(stack);
     }
 
     public static MobEffectListingBuilder potion(MobEffectInstance effect) {
@@ -129,7 +134,7 @@ public abstract class SublistingBuilder<O> {
     }
 
     public List<MaterialCost> buildMaterials() {
-        if (materials.isEmpty() && tagMaterials.isEmpty()) return null;
+        if (materials.isEmpty() && tagMaterials.isEmpty()) Collections.emptyList();
         List<MaterialCost> costs = new ArrayList<>();
         for (ItemStack stack: materials) {
             costs.add(new MaterialCost(Ingredient.of(stack), 1));

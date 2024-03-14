@@ -65,6 +65,7 @@
     {
       "sublistings": [
         {
+          "display_name": "Food Bundle",
           "gold": 9000,
           "listing": {
             "type": "shopaholic:bundle",

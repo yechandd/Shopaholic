@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import uk.joshiejack.penguinlib.util.helper.RegistryHelper;
 import uk.joshiejack.penguinlib.util.icon.Icon;
 import uk.joshiejack.shopaholic.api.shop.Condition;
@@ -54,16 +55,38 @@ public class DepartmentBuilder {
     }
 
     //Shorthands
-    public DepartmentBuilder entityListing(EntityType<?> entity, int gold) {
-        listing(ListingBuilder.of(RegistryHelper.id(entity).getPath())
-                .addSublisting(SublistingBuilder.entity(entity).cost(gold)));
-        return this;
+    public DepartmentBuilder entityListing(EntityType<?> entity, int gold, Condition... conditions) {
+        if (entity == null)
+            throw new IllegalArgumentException("Cannot add a null entity to the shop");
+        ListingBuilder builder = ListingBuilder.of(RegistryHelper.id(entity).getPath())
+                .addSublisting(SublistingBuilder.entity(entity).cost(gold));
+        for (Condition condition : conditions) {
+            builder.condition(condition);
+        }
+
+        return listing(builder);
     }
 
-    public DepartmentBuilder itemListing(Item item, int gold) {
-        listing(ListingBuilder.of(RegistryHelper.id(item).getPath())
-                .addSublisting(SublistingBuilder.item(item).cost(gold)));
-        return this;
+    public DepartmentBuilder itemListing(Item item, int gold, Condition... conditions) {
+        if (item == null)
+            throw new IllegalArgumentException("Cannot add a null item to the shop");
+        return itemListing(item.getDefaultInstance(), gold, conditions);
+    }
+
+    public DepartmentBuilder itemListing(ItemStack item, int gold, Condition... conditions) {
+        return itemListing(RegistryHelper.id(item.getItem()).getPath(), item, gold, conditions);
+    }
+
+    public DepartmentBuilder itemListing(String id, ItemStack item, int gold, Condition... conditions) {
+        if (item.isEmpty())
+            throw new IllegalArgumentException("Cannot add an empty item to the shop");
+        ListingBuilder builder = ListingBuilder.of(id)
+                .addSublisting(SublistingBuilder.item(item).cost(gold));
+        for (Condition condition : conditions) {
+            builder.condition(condition);
+        }
+
+        return listing(builder);
     }
 
     public DepartmentBuilder sellListing(Item item, int gold) {

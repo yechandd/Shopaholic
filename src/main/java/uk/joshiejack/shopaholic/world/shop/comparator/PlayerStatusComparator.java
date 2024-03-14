@@ -19,6 +19,10 @@ public record PlayerStatusComparator(String key) implements Comparator {
         return CODEC;
     }
 
+    public static Comparator status(String key) {
+        return new PlayerStatusComparator(key);
+    }
+
     @Override
     public int getValue(@Nonnull ShopTarget target) {
         return PlayerHelper.getPenguinStatuses(target.getPlayer()).getInt(key);

@@ -2,6 +2,7 @@ package uk.joshiejack.shopaholic.world.shop.condition;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import uk.joshiejack.shopaholic.Shopaholic;
 import uk.joshiejack.shopaholic.api.shop.Comparator;
 import uk.joshiejack.shopaholic.api.shop.Condition;
 import uk.joshiejack.shopaholic.api.shop.ShopTarget;
@@ -10,11 +11,11 @@ import javax.annotation.Nonnull;
 
 public record CompareCondition(Comparator comparator1, boolean lessThan, boolean equalTo, boolean greaterThan, Comparator comparator2) implements Condition {
     public static final Codec<CompareCondition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Comparator.CODEC.fieldOf("comparator 1").forGetter(validator -> validator.comparator1),
+            Shopaholic.ShopaholicRegistries.COMPARATOR_CODEC.fieldOf("comparator_1").forGetter(validator -> validator.comparator1),
             Codec.BOOL.optionalFieldOf("equal_to", true).forGetter(validator -> validator.lessThan),
             Codec.BOOL.optionalFieldOf("less_than", true).forGetter(validator -> validator.equalTo),
             Codec.BOOL.optionalFieldOf("greater_than", true).forGetter(validator -> validator.greaterThan),
-            Comparator.CODEC.fieldOf("comparator 2").forGetter(validator -> validator.comparator2)
+            Shopaholic.ShopaholicRegistries.COMPARATOR_CODEC.fieldOf("comparator_2").forGetter(validator -> validator.comparator2)
     ).apply(instance, CompareCondition::new));
 
     @SuppressWarnings("unused")

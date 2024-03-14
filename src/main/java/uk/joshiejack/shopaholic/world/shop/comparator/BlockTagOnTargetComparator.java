@@ -20,6 +20,10 @@ public record BlockTagOnTargetComparator(TagKey<Block> tag) implements Comparato
         return CODEC;
     }
 
+    public static Comparator blockTag(TagKey<Block> tag) {
+        return new BlockTagOnTargetComparator(tag);
+    }
+
     @Override
     public int getValue(@Nonnull ShopTarget target) {
         return target.getLevel().getBlockState(target.getPos()).is(tag) ? 1 : 0;

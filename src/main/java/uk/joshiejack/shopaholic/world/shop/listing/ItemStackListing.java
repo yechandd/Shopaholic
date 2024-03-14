@@ -26,6 +26,10 @@ public record ItemStackListing(ItemStack stack) implements ListingType {
         return new ItemStackListing(new ItemStack(item));
     }
 
+    public static ItemStackListing of (ItemStack stack) {
+        return new ItemStackListing(stack);
+    }
+
     @Override
     public Icon createIcon() {
         return new ItemIcon(stack);

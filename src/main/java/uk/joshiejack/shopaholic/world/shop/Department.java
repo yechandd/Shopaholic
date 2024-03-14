@@ -59,12 +59,11 @@ public class Department implements ReloadableRegistry.PenguinRegistry<Department
             ComponentSerialization.CODEC.optionalFieldOf("name", Component.empty()).forGetter(department -> department.name),
             ComponentSerialization.CODEC.optionalFieldOf("out_of_stock", OUT_OF_STOCK).forGetter(department -> department.outOfStockText),
             Icon.CODEC.optionalFieldOf("icon", ItemIcon.EMPTY).forGetter(department -> department.icon),
-            Shopaholic.ShopaholicRegistries.CONDITION_CODEC.listOf().optionalFieldOf("conditions", new ArrayList<>()).forGetter(listing -> listing.conditions),
-            Listing.CODEC.listOf().fieldOf("listings").forGetter(department -> department.getListings().stream().toList())
+            Shopaholic.ShopaholicRegistries.CONDITION_CODEC.listOf().optionalFieldOf("conditions", Collections.emptyList()).forGetter(department -> department.conditions),
+            Listing.CODEC.listOf().optionalFieldOf("listings", Collections.emptyList()).forGetter(department -> department.getListings().isEmpty() ?
+                    Collections.emptyList() : new ArrayList<>(department.getListings()))
             //
-    ).apply(instance, (d, x, y, z, r ,j, m, s, g) -> {
-        return new Department(d, x, y, z, r, j, m, s, g);
-    }));
+    ).apply(instance, Department::new));
 
     public static final Department EMPTY = new Department(EMPTY_ID, ShopTargetType.COMMAND, Strings.EMPTY, InputMethod.COMMAND, Component.empty(),
             OUT_OF_STOCK, ItemIcon.EMPTY, Collections.emptyList(), Collections.emptyList());

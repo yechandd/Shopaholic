@@ -19,6 +19,10 @@ public record AddComparator(List<Comparator> comparators) implements Comparator 
         return CODEC;
     }
 
+    public static Comparator add(Comparator ...comparators) {
+        return new AddComparator(List.of(comparators));
+    }
+
     @Override
     public int getValue(@Nonnull ShopTarget target) {
         return comparators.stream().mapToInt(c -> c.getValue(target)).sum();
