@@ -41,35 +41,35 @@ public abstract class SublistingBuilder<O> {
 
     public abstract Sublisting build();
 
-    public static ItemListingBuilder item(Item item) {
+    public static ItemListingBuilder itemListing(Item item) {
         return new ItemListingBuilder(item.getDefaultInstance());
     }
 
-    public static ItemListingBuilder item(ItemStack stack) {
+    public static ItemListingBuilder itemListing(ItemStack stack) {
         return new ItemListingBuilder(stack);
     }
 
-    public static MobEffectListingBuilder potion(MobEffectInstance effect) {
+    public static MobEffectListingBuilder potionListing(MobEffectInstance effect) {
         return new MobEffectListingBuilder(effect);
     }
 
-    public static EntityListingBuilder entity(EntityType<?> spawnData) {
+    public static EntityListingBuilder entityListing(EntityType<?> spawnData) {
         return new EntityListingBuilder(spawnData);
     }
 
-    public static DepartmentListingBuilder department(ResourceLocation departmentID) {
+    public static DepartmentListingBuilder departmentListing(ResourceLocation departmentID) {
         return new DepartmentListingBuilder(departmentID);
     }
 
-    public static BundleListingBuilder bundle() {
+    public static BundleListingBuilder bundleListing() {
         return new BundleListingBuilder();
     }
 
-    public static HealListingBuilder heal(float healAmount) {
+    public static HealListingBuilder healListing(float healAmount) {
         return new HealListingBuilder(healAmount);
     }
 
-    public static CommandListingBuilder command(String command) {
+    public static CommandListingBuilder commandListing(String command) {
         return new CommandListingBuilder(command);
     }
 
@@ -77,15 +77,15 @@ public abstract class SublistingBuilder<O> {
         return new KubeJSScriptListingBuilder(script);
     }
 
-    public static StatusListingBuilder playerStatus(String field, ComparatorBuilder comparator) {
+    public static StatusListingBuilder playerStatusListing(String field, ComparatorBuilder comparator) {
         return new StatusListingBuilder("player_status", field, comparator);
     }
 
-    public static StatusListingBuilder teamStatus(String field, ComparatorBuilder comparator) {
+    public static StatusListingBuilder teamStatusListing(String field, ComparatorBuilder comparator) {
         return new StatusListingBuilder("team_status", field, comparator);
     }
 
-    public static GoldListingBuilder sell() {
+    public static GoldListingBuilder sellListing() {
         return new GoldListingBuilder();
     }
 

@@ -19,7 +19,7 @@ public record PlayerStatusComparator(String key) implements Comparator {
         return CODEC;
     }
 
-    public static Comparator status(String key) {
+    public static Comparator playerStatus(String key) {
         return new PlayerStatusComparator(key);
     }
 

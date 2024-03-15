@@ -16,19 +16,19 @@ public class Vendor {
         this.data = data;
     }
 
-    public static Vendor entity(EntityType<?> vendor) {
+    public static Vendor entityVendor(EntityType<?> vendor) {
         return new Vendor(Department.ShopTargetType.ENTITY, RegistryHelper.id(vendor).toString());
     }
 
-    public static Vendor item(Item item) {
+    public static Vendor itemVendor(Item item) {
         return new Vendor(Department.ShopTargetType.ITEM ,RegistryHelper.id(item).toString());
     }
 
-    public static Vendor block(Block block) {
+    public static Vendor blockVendor(Block block) {
         return new Vendor(Department.ShopTargetType.BLOCK, RegistryHelper.id(block).toString());
     }
 
-    public static Vendor command(String command) {
+    public static Vendor commandVendor(String command) {
         return new Vendor(Department.ShopTargetType.COMMAND, command);
     }
 }

@@ -14,7 +14,7 @@ public record PlayerNamedCondition(Pattern pattern) implements Condition {
             ExtraCodecs.PATTERN.fieldOf("pattern").forGetter(PlayerNamedCondition::pattern)
     ).apply(instance, PlayerNamedCondition::new));
 
-    public static Condition named(String name) {
+    public static Condition playerNamed(String name) {
         return new PlayerNamedCondition(Pattern.compile(name));
     }
 

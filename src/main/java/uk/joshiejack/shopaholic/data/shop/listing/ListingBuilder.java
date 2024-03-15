@@ -30,11 +30,11 @@ public class ListingBuilder {
         this.id = id;
     }
 
-    public static ListingBuilder of(String id) {
+    public static ListingBuilder withId(String id) {
         return new ListingBuilder(id);
     }
 
-    public ListingBuilder addSublisting(SublistingBuilder<?> sublisting) {
+    public ListingBuilder with(SublistingBuilder<?> sublisting) {
         if (!sublistings.isEmpty()) {
             if (sublistings.size() == 1)
                 sublistings.get(0).id("item_1");
